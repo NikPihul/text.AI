@@ -4,7 +4,7 @@ using namespace std;
 #define WORDS_STEP 1
 #define N 256
 
-bool isOriginalLine(char fragment[], char base[]);
+bool isOriginalLine(char* w1, char* w2);
 bool isSeparator(char c);
 void changeInput(char *inputText);
 int strLength(char line[]);
@@ -13,21 +13,20 @@ int firstWordLength(char textFragment[]);
 
 int main () {
 	char textBase[] = "hello my dear hello world ";
-	char textInput[] = "My,,      dEaR ... heLlo couNTry curRENt dear hello world faIl";
+	char textInput[] = "My,,      dEaR ... heLlo couNTry curRENt dear hello faIl";
 	char textFragment[N] = "";
 	int attempts = 0;
 	int subCarriage = 0;
 	int wordsCounter = 0;
-	bool attemptsFlag = false;
 	int originalCounter = 0;
-	int inputLength = strLength(textInput);
-
-	changeInput(textInput);
-	cout << "Input text: " <<textInput << endl;
-	cout << "Text base:  " <<textBase << endl << endl;
+	char* base = textBase;
+	char* fragment;
+	int inputLength;
 	
+	changeInput(textInput);
+	inputLength = strLength(textInput);
 
-	for (int i = 0; textInput[i] != '\0'; i++) {
+	for (int i = 0; i <= inputLength; i++) {
 		textFragment[subCarriage] = textInput[i];
 		subCarriage++;
 		if(isSeparator(textInput[i]))
@@ -36,40 +35,39 @@ int main () {
 			for (int j = strLength(textFragment) - 1; j > subCarriage - 1; j--) {
 				textFragment[j] = 0;
 			}
-			if (isOriginalLine(textFragment, textBase)) {
+			fragment = textFragment;
+			if (isOriginalLine(base, fragment)) {
 				originalCounter++;
 			}
-			cout << textFragment << "<-- Text to compare" << endl;
-			cout << textBase << "<-- To compare with" << endl;
-			cout << isOriginalLine(textFragment, textBase) << endl;
 			attempts++;
 			wordsCounter = 0;
 			i = i - subCarriage + firstWordLength(textFragment) + 1;
 			subCarriage = 0;
 		}
 	}
-	
-	cout << attempts << endl;
-	cout << originalCounter << endl;
 
+	cout << "Originality of entered text is: " << originalCounter * 100 / attempts << " %" << endl;
+	
 	return 0;
 }
 
-bool isOriginalLine(char fragment[], char base[])
+bool isOriginalLine(char *base, char *fragment)
 {
-	for (int i = 0; base[i] != '\0'; i++) {
-		if (base[i] == fragment[0] and (isSeparator(base[i-1]) or i == 0)) {
-			for (int j = 0; fragment[j] != '\0'; j++) {
-				if (fragment[j] == base[i]) {
-					i++;
-				} else
-					break;
-				if (fragment[j+1] == '\0' and isSeparator(base[i]))
-					return false;
-			}
-		}
-	}
-	return true;
+	int i=0;
+    int j=0;
+
+    for(i;i < strLength(base); i++)
+    {
+        if(base[i] == fragment[j])
+        {
+            j++;
+        }
+    }
+
+    if(strLength(fragment) == j)
+        return false;
+    else
+        return true;
 }
 
 bool isSeparator(char c)
